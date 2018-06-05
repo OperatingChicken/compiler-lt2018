@@ -33,6 +33,9 @@ StringLiteral = \".*\"
 "=" {return "EQUALS";}
 "?" {return "QUESTION_MARK";}
 ":" {return "COLON";}
+"(" {return "LPAREN";}
+")" {return "RPAREN";}
+"&" {return "LINEWRAP";}
 {Identifier} {return "IDENTIFIER";}
 {DecLiteral} {return "DEC_LITERAL";}
 {HexLiteral} {return "HEX_LITERAL";}
