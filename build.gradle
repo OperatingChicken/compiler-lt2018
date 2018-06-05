@@ -1,3 +1,9 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
 plugins {
     id 'java'
     id 'application'
@@ -6,7 +12,6 @@ plugins {
 }
 
 repositories {
-    //jcenter()
     mavenCentral()
     maven {
         url "http://xbib.org/repository"

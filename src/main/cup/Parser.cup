@@ -1,0 +1,48 @@
+import java_cup.runtime.*;
+
+class Parser;
+
+terminal NEWLINE, LINEWRAP, INPUT, OUTPUT, OUTPUT_NEWLINE, LOOP, END_LOOP;
+terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN;
+terminal Long NUM_LITERAL;
+terminal String STRING_LITERAL, IDENTIFIER;
+
+non terminal Program, StmtList, Stmt;
+non terminal NewLine;
+non terminal AssignStmt, OutputStmt, LoopStmt;
+non terminal Expr;
+
+precedence left ADD, SUB;
+precedence left MUL, DIV, MOD;
+
+start with Program;
+
+Program ::= StmtList;
+
+StmtList ::= Stmt NewLine
+    | StmtList Stmt NewLine;
+
+Stmt ::= AssignStmt
+    | OutputStmt
+    | LoopStmt;
+
+AssignStmt ::= IDENTIFIER EQUALS Expr;
+
+OutputStmt ::= OUTPUT STRING_LITERAL Expr
+    | OUTPUT STRING_LITERAL
+    | OUTPUT Expr
+    | OUTPUT_NEWLINE;
+
+LoopStmt ::= LOOP Expr NewLine StmtList END_LOOP;
+
+Expr ::= NUM_LITERAL
+    | IDENTIFIER
+    | Expr ADD Expr
+    | Expr SUB Expr
+    | Expr MUL Expr
+    | Expr DIV Expr
+    | Expr MOD Expr
+    | INPUT
+    | INPUT STRING_LITERAL;
+
+NewLine ::= NEWLINE;
