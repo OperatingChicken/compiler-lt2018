@@ -25,17 +25,17 @@ stmtList ::= stmt:stmt newLine {: RESULT = new StmtList(stmt); :}
     | stmtList:stmts stmt:stmt newLine {: stmts.add(stmt); RESULT = stmts; :};
 
 stmt ::= assignStmt:stmt {: RESULT = stmt; :}
-    | outputStmt
-    | loopStmt;
+    | outputStmt:stmt {: RESULT = stmt; :}
+    | loopStmt:stmt {: RESULT = stmt; :};
 
 assignStmt ::= IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignStmt(id, e); :};
 
-outputStmt ::= OUTPUT STRING_LITERAL expr
-    | OUTPUT STRING_LITERAL
-    | OUTPUT expr
-    | OUTPUT_NEWLINE;
+outputStmt ::= OUTPUT STRING_LITERAL:l expr:e {: RESULT = new OutputStmt(l, e); :}
+    | OUTPUT STRING_LITERAL:l {: RESULT = new OutputStmt(l); :}
+    | OUTPUT expr:e {: RESULT = new OutputStmt(e); :}
+    | OUTPUT_NEWLINE {: RESULT = new OutputStmt(); :};
 
-loopStmt ::= LOOP expr newLine stmtList END_LOOP;
+loopStmt ::= LOOP expr:condition newLine stmtList:body END_LOOP {: RESULT = new LoopStmt(condition, body); :};
 
 expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | IDENTIFIER:id {: RESULT = new IdentifierExpr(id); :}
@@ -44,7 +44,7 @@ expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | expr:l MUL expr:r {: RESULT = new MulExpr(l, r); :}
     | expr:l DIV expr:r {: RESULT = new DivExpr(l, r); :}
     | expr:l MOD expr:r {: RESULT = new ModExpr(l, r); :}
-    | INPUT
-    | INPUT STRING_LITERAL;
+    | INPUT {: RESULT = new InputExpr(); :}
+    | INPUT STRING_LITERAL:prompt {: RESULT = new InputExpr(prompt); :};
 
 newLine ::= NEWLINE;
