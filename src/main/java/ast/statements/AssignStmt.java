@@ -1,6 +1,10 @@
+package ast.statements;
+
+import ast.expressions.Expr;
+
 public class AssignStmt extends Stmt {
-    private String identifier;
-    private Expr expr;
+    private final String identifier;
+    private final Expr expr;
 
     public AssignStmt(String identifier, Expr expr) {
         this.identifier = identifier;

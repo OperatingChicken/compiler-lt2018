@@ -1,8 +1,10 @@
-public abstract class BinaryOpExpr extends Expr {
-    private Expr leftOperand;
-    private Expr rightOperand;
+package ast.expressions;
 
-    public BinaryOpExpr(Expr leftOperand, Expr rightOperand) {
+public abstract class BinaryOpExpr extends Expr {
+    private final Expr leftOperand;
+    private final Expr rightOperand;
+
+    BinaryOpExpr(Expr leftOperand, Expr rightOperand) {
         this.leftOperand = leftOperand;
         this.rightOperand = rightOperand;
     }

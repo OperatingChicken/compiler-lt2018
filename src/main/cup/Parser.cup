@@ -1,5 +1,6 @@
 import java_cup.runtime.*;
-import java.util.ArrayList;
+import ast.statements.*;
+import ast.expressions.*;
 
 class Parser;
 
@@ -8,7 +9,7 @@ terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN;
 terminal Long NUM_LITERAL;
 terminal String STRING_LITERAL, IDENTIFIER;
 
-non terminal ArrayList<Stmt> program, stmtList;
+non terminal StmtList program, stmtList;
 non terminal Stmt stmt, assignStmt, outputStmt, loopStmt;
 non terminal Expr expr;
 non terminal newLine;
@@ -20,7 +21,7 @@ start with program;
 
 program ::= stmtList:stmts {: RESULT = stmts; :};
 
-stmtList ::= stmt:stmt newLine {: RESULT = new ArrayList<Stmt>(); RESULT.add(stmt); :}
+stmtList ::= stmt:stmt newLine {: RESULT = new StmtList(stmt); :}
     | stmtList:stmts stmt:stmt newLine {: stmts.add(stmt); RESULT = stmts; :};
 
 stmt ::= assignStmt:stmt {: RESULT = stmt; :}
