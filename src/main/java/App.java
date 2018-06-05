@@ -1,8 +1,8 @@
 import java_cup.runtime.ComplexSymbolFactory;
-import java_cup.runtime.Symbol;
 
 import java.io.Reader;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -21,6 +21,10 @@ public class App {
         }*/
 
         Parser parser = new Parser(lexer, symbolFactory);
-        Symbol astRoot = parser.parse();
+        ArrayList<Stmt> stmtList = (ArrayList<Stmt>) parser.parse().value;
+
+        for (Stmt stmt: stmtList) {
+            System.out.println(stmt.toString());
+        }
     }
 }

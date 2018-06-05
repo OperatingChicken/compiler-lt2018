@@ -1,4 +1,5 @@
 import java_cup.runtime.*;
+import java.util.ArrayList;
 
 class Parser;
 
@@ -7,42 +8,42 @@ terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN;
 terminal Long NUM_LITERAL;
 terminal String STRING_LITERAL, IDENTIFIER;
 
-non terminal Program, StmtList, Stmt;
-non terminal NewLine;
-non terminal AssignStmt, OutputStmt, LoopStmt;
-non terminal Expr;
+non terminal ArrayList<Stmt> program, stmtList;
+non terminal Stmt stmt, assignStmt, outputStmt, loopStmt;
+non terminal Expr expr;
+non terminal newLine;
 
 precedence left ADD, SUB;
 precedence left MUL, DIV, MOD;
 
-start with Program;
+start with program;
 
-Program ::= StmtList;
+program ::= stmtList:stmts {: RESULT = stmts; :};
 
-StmtList ::= Stmt NewLine
-    | StmtList Stmt NewLine;
+stmtList ::= stmt:stmt newLine {: RESULT = new ArrayList<Stmt>(); RESULT.add(stmt); :}
+    | stmtList:stmts stmt:stmt newLine {: stmts.add(stmt); RESULT = stmts; :};
 
-Stmt ::= AssignStmt
-    | OutputStmt
-    | LoopStmt;
+stmt ::= assignStmt:stmt {: RESULT = stmt; :}
+    | outputStmt
+    | loopStmt;
 
-AssignStmt ::= IDENTIFIER EQUALS Expr;
+assignStmt ::= IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignStmt(id, e); :};
 
-OutputStmt ::= OUTPUT STRING_LITERAL Expr
+outputStmt ::= OUTPUT STRING_LITERAL expr
     | OUTPUT STRING_LITERAL
-    | OUTPUT Expr
+    | OUTPUT expr
     | OUTPUT_NEWLINE;
 
-LoopStmt ::= LOOP Expr NewLine StmtList END_LOOP;
+loopStmt ::= LOOP expr newLine stmtList END_LOOP;
 
-Expr ::= NUM_LITERAL
-    | IDENTIFIER
-    | Expr ADD Expr
-    | Expr SUB Expr
-    | Expr MUL Expr
-    | Expr DIV Expr
-    | Expr MOD Expr
+expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
+    | IDENTIFIER:id {: RESULT = new IdentifierExpr(id); :}
+    | expr:l ADD expr:r {: RESULT = new AddExpr(l, r); :}
+    | expr:l SUB expr:r {: RESULT = new SubExpr(l, r); :}
+    | expr:l MUL expr:r {: RESULT = new MulExpr(l, r); :}
+    | expr:l DIV expr:r {: RESULT = new DivExpr(l, r); :}
+    | expr:l MOD expr:r {: RESULT = new ModExpr(l, r); :}
     | INPUT
     | INPUT STRING_LITERAL;
 
-NewLine ::= NEWLINE;
+newLine ::= NEWLINE;
