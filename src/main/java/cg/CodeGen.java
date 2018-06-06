@@ -1,3 +1,7 @@
+package cg;
+
+import java.util.Set;
+import java.util.HashMap;
 import org.bytedeco.javacpp.*;
 import static org.bytedeco.javacpp.LLVM.*;
 
@@ -5,9 +9,14 @@ public class CodeGen {
     private static CodeGen singleton = null;
     private BytePointer error;
     private LLVMModuleRef module;
-    private LLVMValueRef main_function;
     private LLVMBuilderRef builder;
-    private LLVMBasicBlockRef return_block;
+    private LLVMValueRef main_function;
+    private LLVMValueRef printf_function;
+    private LLVMValueRef scanf_function;
+    private LLVMBasicBlockRef main_block;
+    private HashMap<String, LLVMValueRef> variables;
+    private LLVMValueRef variable_string;
+    private LLVMValueRef tmp_variable;
 
     private CodeGen() {
         this.error = new BytePointer((Pointer)null);
@@ -25,27 +34,61 @@ public class CodeGen {
         LLVMTypeRef printf_function_type = LLVMFunctionType(LLVMInt32Type(), printf_function_params, 1, 1);
         LLVMTypeRef scanf_function_type = LLVMFunctionType(LLVMInt32Type(), scanf_function_params, 1, 1);
         this.main_function = LLVMAddFunction(this.module, "main", main_function_type);
-        LLVMValueRef printf_function = LLVMAddFunction(this.module, "printf", printf_function_type);
-        LLVMValueRef scanf_function = LLVMAddFunction(this.module, "scanf", scanf_function_type);
+        this.printf_function = LLVMAddFunction(this.module, "printf", printf_function_type);
+        this.scanf_function = LLVMAddFunction(this.module, "scanf", scanf_function_type);
         LLVMSetFunctionCallConv(this.main_function, LLVMCCallConv);
         LLVMSetFunctionCallConv(printf_function, LLVMCCallConv);
         LLVMSetLinkage(printf_function, LLVMExternalLinkage);
         LLVMSetFunctionCallConv(scanf_function, LLVMCCallConv);
         LLVMSetLinkage(scanf_function, LLVMExternalLinkage);
-        // TODO
-        this.return_block = LLVMAppendBasicBlock(this.main_function, "");
+        this.main_block = LLVMAppendBasicBlock(this.main_function, "");
         this.builder = LLVMCreateBuilder();
-        LLVMPositionBuilderAtEnd(this.builder, this.return_block);
-        LLVMValueRef printer_string = LLVMBuildGlobalStringPtr(this.builder, "Insert your lucky number: ", "");
-        PointerPointer printf_params = new PointerPointer(new LLVMValueRef[] { printer_string } );
-        LLVMBuildCall(this.builder, printf_function, printf_params, 1, "");
-        LLVMValueRef to_read_string = LLVMBuildGlobalStringPtr(this.builder, "%d", "");
-        LLVMValueRef variable = LLVMBuildAlloca(this.builder, LLVMInt32Type(), "");
-        PointerPointer scanf_params = new PointerPointer(new LLVMValueRef[] { to_read_string, variable });
-        LLVMBuildCall(this.builder, scanf_function, scanf_params, 2, "");
-        LLVMValueRef hello_world_string = LLVMBuildGlobalStringPtr(this.builder, "Your lucky number: %d\n", "");
-        printf_params = new PointerPointer(new LLVMValueRef[] { hello_world_string, LLVMBuildLoad(this.builder, variable, "") });
-        LLVMBuildCall(this.builder, printf_function, printf_params, 2, "");
+        LLVMPositionBuilderAtEnd(this.builder, this.main_block);
+        this.variable_string = LLVMBuildGlobalStringPtr(this.builder, "%lld", "");
+        this.tmp_variable = LLVMBuildAlloca(this.builder, LLVMInt64Type(), "");
+    }
+
+    public void initVariables(Set<String> variables) {
+        this.variables = new HashMap<>();
+        for(String name: variables) {
+            this.variables.put(name, LLVMBuildAlloca(this.builder, LLVMInt64Type(), ""));
+        }
+    }
+
+    public LLVMBuilderRef getBuilder() {
+        return this.builder;
+    }
+
+    public LLVMValueRef getVariable(String name) {
+        return LLVMBuildLoad(this.builder, this.variables.get(name), "");
+    }
+
+    public void setVariable(String name, LLVMValueRef value) {
+        LLVMBuildStore(this.builder, value, this.variables.get(name));
+    }
+
+    public LLVMValueRef inputValue() {
+        PointerPointer scanf_params = new PointerPointer(new LLVMValueRef[] { this.variable_string, this.tmp_variable });
+        LLVMBuildCall(this.builder, this.scanf_function, scanf_params, 2, "");
+        return LLVMBuildLoad(this.builder, this.tmp_variable, "");
+    }
+
+    public void outputValue(LLVMValueRef value) {
+        PointerPointer printf_params = new PointerPointer(new LLVMValueRef[] { this.variable_string, value });
+        LLVMBuildCall(this.builder, this.printf_function, printf_params, 2, "");
+    }
+
+    public void outputString(String s) {
+        PointerPointer printf_params = new PointerPointer(new LLVMValueRef[] { LLVMBuildGlobalStringPtr(this.builder, s, "") });
+        LLVMBuildCall(this.builder, this.printf_function, printf_params, 1, "");
+    }
+
+    public LLVMValueRef getConstant(long value) {
+        return LLVMConstInt(LLVMInt64Type(), value, 0);
+    }
+
+    public void finalize() {
+        LLVMPositionBuilderAtEnd(this.builder, this.main_block);
         LLVMBuildRet(this.builder, LLVMConstInt(LLVMInt32Type(), 0, 0));
         LLVMVerifyModule(this.module, LLVMAbortProcessAction, error);
         LLVMDisposeMessage(error);
@@ -79,7 +122,7 @@ public class CodeGen {
         System.err.println(module_string);
     }
 
-    public static synchronized CodeGen getSingleton() {
+    public static synchronized CodeGen getInstance() {
         if(CodeGen.singleton == null) {
             CodeGen.singleton = new CodeGen();
         }

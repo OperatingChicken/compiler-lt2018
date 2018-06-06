@@ -2,6 +2,7 @@ package ast.statements;
 
 import java.util.Set;
 import ast.expressions.Expr;
+import cg.CodeGen;
 
 public class LoopStmt extends Stmt {
     private final Expr condition;
@@ -12,9 +13,9 @@ public class LoopStmt extends Stmt {
         this.body = body;
     }
 
-    @Override
-    public void codeGen() {
-
+    public void codeGen(CodeGen codegen) {
+        System.err.println("LoopStmt UNIMPLEMENTED!!!");
+        System.exit(1);
     }
 
     public Set<String> getIdentifiers() {

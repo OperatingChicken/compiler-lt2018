@@ -2,6 +2,7 @@ package ast.statements;
 
 import java.util.Set;
 import ast.expressions.Expr;
+import cg.CodeGen;
 
 public class AssignStmt extends Stmt {
     private final String identifier;
@@ -12,9 +13,8 @@ public class AssignStmt extends Stmt {
         this.expr = expr;
     }
 
-    @Override
-    public void codeGen() {
-
+    public void codeGen(CodeGen codegen) {
+        codegen.setVariable(this.identifier, this.expr.codeGen(codegen));
     }
 
     public Set<String> getIdentifiers() {

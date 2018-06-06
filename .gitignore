@@ -41,3 +41,5 @@ gradle-app.setting
 
 # This project
 default.lang
+*.out
+*.o

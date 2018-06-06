@@ -1,7 +1,9 @@
 package ast.statements;
 
 import java.util.Set;
+import java.util.HashSet;
 import ast.expressions.Expr;
+import cg.CodeGen;
 
 public class OutputStmt extends Stmt {
     private final String label;
@@ -24,12 +26,17 @@ public class OutputStmt extends Stmt {
         this(System.lineSeparator(), null);
     }
 
-    @Override
-    public void codeGen() {
-
+    public void codeGen(CodeGen codegen) {
+        codegen.outputString(this.label);
+        if(this.expr != null) {
+            codegen.outputValue(this.expr.codeGen(codegen));
+        }
     }
 
     public Set<String> getIdentifiers() {
+        if(this.expr == null) {
+            return new HashSet<>();
+        }
         return this.expr.getIdentifiers();
     }
 

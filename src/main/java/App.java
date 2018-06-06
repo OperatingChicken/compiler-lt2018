@@ -1,6 +1,6 @@
 import ast.statements.Stmt;
 import java_cup.runtime.ComplexSymbolFactory;
-
+import cg.CodeGen;
 import java.io.FileReader;
 import java.io.Reader;
 
@@ -22,6 +22,10 @@ public class App {
 
         Parser parser = new Parser(lexer, symbolFactory);
         Stmt astRoot = (Stmt) parser.parse().value;
+        CodeGen codegen = CodeGen.getInstance();
+        codegen.initVariables(astRoot.getIdentifiers());
+        astRoot.codeGen(codegen);
         System.out.println(astRoot.toString());
+        codegen.finalize();
     }
 }

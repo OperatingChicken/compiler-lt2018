@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+import cg.CodeGen;
 
 public class StmtList extends Stmt {
     private final ArrayList<Stmt> statements;
@@ -17,9 +18,10 @@ public class StmtList extends Stmt {
         statements.add(stmt);
     }
 
-    @Override
-    public void codeGen() {
-
+    public void codeGen(CodeGen codegen) {
+        for(Stmt stmt: this.statements) {
+            stmt.codeGen(codegen);
+        }
     }
 
     public Set<String> getIdentifiers() {
