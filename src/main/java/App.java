@@ -9,7 +9,7 @@ public class App {
         if (args.length != 1) {
             //System.err.println("Usage: java -jar compiler-lt2018.jar inputFileName");
             //System.exit(1);
-            args = new String[]{"default"};
+            args = new String[]{"default.lang"};
         }
         Reader in = new FileReader(args[0]);
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();

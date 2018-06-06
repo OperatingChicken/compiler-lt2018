@@ -1,6 +1,8 @@
 package ast.statements;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class StmtList extends Stmt {
@@ -16,8 +18,16 @@ public class StmtList extends Stmt {
     }
 
     @Override
-    void genCode() {
+    public void codeGen() {
 
+    }
+
+    public Set<String> getIdentifiers() {
+        HashSet<String> result = new HashSet<>();
+        for(Stmt stmt: this.statements) {
+            result.addAll(stmt.getIdentifiers());
+        }
+        return result;
     }
 
     @Override

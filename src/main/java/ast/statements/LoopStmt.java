@@ -1,5 +1,6 @@
 package ast.statements;
 
+import java.util.Set;
 import ast.expressions.Expr;
 
 public class LoopStmt extends Stmt {
@@ -12,8 +13,14 @@ public class LoopStmt extends Stmt {
     }
 
     @Override
-    void genCode() {
+    public void codeGen() {
 
+    }
+
+    public Set<String> getIdentifiers() {
+        Set<String> result = this.condition.getIdentifiers();
+        result.addAll(this.body.getIdentifiers());
+        return result;
     }
 
     @Override

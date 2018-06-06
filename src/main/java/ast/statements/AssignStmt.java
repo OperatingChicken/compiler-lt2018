@@ -1,5 +1,6 @@
 package ast.statements;
 
+import java.util.Set;
 import ast.expressions.Expr;
 
 public class AssignStmt extends Stmt {
@@ -12,8 +13,14 @@ public class AssignStmt extends Stmt {
     }
 
     @Override
-    public void genCode() {
+    public void codeGen() {
 
+    }
+
+    public Set<String> getIdentifiers() {
+        Set<String> result = this.expr.getIdentifiers();
+        result.add(this.identifier);
+        return result;
     }
 
     @Override

@@ -38,3 +38,6 @@ gradle-app.setting
 # IntelliJ project files
 *.iml
 .idea/
+
+# This project
+default.lang

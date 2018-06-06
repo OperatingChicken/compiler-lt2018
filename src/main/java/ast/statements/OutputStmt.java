@@ -1,5 +1,6 @@
 package ast.statements;
 
+import java.util.Set;
 import ast.expressions.Expr;
 
 public class OutputStmt extends Stmt {
@@ -24,8 +25,12 @@ public class OutputStmt extends Stmt {
     }
 
     @Override
-    void genCode() {
+    public void codeGen() {
 
+    }
+
+    public Set<String> getIdentifiers() {
+        return this.expr.getIdentifiers();
     }
 
     @Override
