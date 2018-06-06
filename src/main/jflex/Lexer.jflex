@@ -46,6 +46,6 @@ StringLiteral = \".*\"
 "&" {return sf.newSymbol("LINEWRAP", ParserSym.LINEWRAP);}
 {Identifier} {return sf.newSymbol("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
 {DecLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
-{HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL);}
+{HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
 {StringLiteral} {return sf.newSymbol("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
 <<EOF>> {return sf.newSymbol("End of file", ParserSym.EOF);}

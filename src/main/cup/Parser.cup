@@ -5,7 +5,7 @@ import ast.expressions.*;
 class Parser;
 
 terminal NEWLINE, LINEWRAP, INPUT, OUTPUT, OUTPUT_NEWLINE, LOOP, END_LOOP;
-terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN;
+terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN, UNARY;
 terminal Long NUM_LITERAL;
 terminal String STRING_LITERAL, IDENTIFIER;
 
@@ -16,6 +16,7 @@ non terminal newLine;
 
 precedence left ADD, SUB;
 precedence left MUL, DIV, MOD;
+precedence right UNARY;
 
 start with program;
 
@@ -44,6 +45,9 @@ expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | expr:l MUL expr:r {: RESULT = new MulExpr(l, r); :}
     | expr:l DIV expr:r {: RESULT = new DivExpr(l, r); :}
     | expr:l MOD expr:r {: RESULT = new ModExpr(l, r); :}
+    | SUB expr:e {: RESULT = new SubExpr(new NumLiteralExpr(0L), e); :} %prec UNARY
+    | ADD expr:e {: RESULT = e; :} %prec UNARY
+    | LPAREN expr:e RPAREN {: RESULT = e; :}
     | INPUT {: RESULT = new InputExpr(); :}
     | INPUT STRING_LITERAL:prompt {: RESULT = new InputExpr(prompt); :};
 
