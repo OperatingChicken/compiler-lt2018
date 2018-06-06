@@ -1,0 +1,50 @@
+import java_cup.runtime.*;
+import ast.statements.*;
+import ast.expressions.*;
+
+class Parser;
+
+terminal NEWLINE, LINEWRAP, INPUT, OUTPUT, OUTPUT_NEWLINE, LOOP, END_LOOP;
+terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN;
+terminal Long NUM_LITERAL;
+terminal String STRING_LITERAL, IDENTIFIER;
+
+non terminal StmtList program, stmtList;
+non terminal Stmt stmt, assignStmt, outputStmt, loopStmt;
+non terminal Expr expr;
+non terminal newLine;
+
+precedence left ADD, SUB;
+precedence left MUL, DIV, MOD;
+
+start with program;
+
+program ::= stmtList:stmts {: RESULT = stmts; :};
+
+stmtList ::= stmt:stmt newLine {: RESULT = new StmtList(stmt); :}
+    | stmtList:stmts stmt:stmt newLine {: stmts.add(stmt); RESULT = stmts; :};
+
+stmt ::= assignStmt:stmt {: RESULT = stmt; :}
+    | outputStmt:stmt {: RESULT = stmt; :}
+    | loopStmt:stmt {: RESULT = stmt; :};
+
+assignStmt ::= IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignStmt(id, e); :};
+
+outputStmt ::= OUTPUT STRING_LITERAL:l expr:e {: RESULT = new OutputStmt(l, e); :}
+    | OUTPUT STRING_LITERAL:l {: RESULT = new OutputStmt(l); :}
+    | OUTPUT expr:e {: RESULT = new OutputStmt(e); :}
+    | OUTPUT_NEWLINE {: RESULT = new OutputStmt(); :};
+
+loopStmt ::= LOOP expr:condition newLine stmtList:body END_LOOP {: RESULT = new LoopStmt(condition, body); :};
+
+expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
+    | IDENTIFIER:id {: RESULT = new IdentifierExpr(id); :}
+    | expr:l ADD expr:r {: RESULT = new AddExpr(l, r); :}
+    | expr:l SUB expr:r {: RESULT = new SubExpr(l, r); :}
+    | expr:l MUL expr:r {: RESULT = new MulExpr(l, r); :}
+    | expr:l DIV expr:r {: RESULT = new DivExpr(l, r); :}
+    | expr:l MOD expr:r {: RESULT = new ModExpr(l, r); :}
+    | INPUT {: RESULT = new InputExpr(); :}
+    | INPUT STRING_LITERAL:prompt {: RESULT = new InputExpr(prompt); :};
+
+newLine ::= NEWLINE;
