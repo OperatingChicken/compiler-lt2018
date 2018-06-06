@@ -14,6 +14,7 @@ non terminal Stmt stmt, assignStmt, outputStmt, loopStmt;
 non terminal Expr expr;
 non terminal newLine;
 
+precedence right EQUALS;
 precedence left ADD, SUB;
 precedence left MUL, DIV, MOD;
 precedence right UNARY;
@@ -48,6 +49,7 @@ expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | SUB expr:e {: RESULT = new SubExpr(new NumLiteralExpr(0L), e); :} %prec UNARY
     | ADD expr:e {: RESULT = e; :} %prec UNARY
     | LPAREN expr:e RPAREN {: RESULT = e; :}
+    | IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignExpr(id, e); :}
     | INPUT {: RESULT = new InputExpr(); :}
     | INPUT STRING_LITERAL:prompt {: RESULT = new InputExpr(prompt); :};
 
