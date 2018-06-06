@@ -2,6 +2,7 @@ package cg;
 
 import java.util.Set;
 import java.util.HashMap;
+import java.util.Stack;
 import org.bytedeco.javacpp.*;
 import static org.bytedeco.javacpp.LLVM.*;
 
@@ -13,10 +14,11 @@ public class CodeGen {
     private LLVMValueRef main_function;
     private LLVMValueRef printf_function;
     private LLVMValueRef scanf_function;
-    private LLVMBasicBlockRef main_block;
     private HashMap<String, LLVMValueRef> variables;
     private LLVMValueRef variable_string;
     private LLVMValueRef tmp_variable;
+    private LLVMValueRef zero_constant;
+    private Stack<LLVMBasicBlockRef> blocks;
 
     private CodeGen() {
         this.error = new BytePointer((Pointer)null);
@@ -41,11 +43,14 @@ public class CodeGen {
         LLVMSetLinkage(printf_function, LLVMExternalLinkage);
         LLVMSetFunctionCallConv(scanf_function, LLVMCCallConv);
         LLVMSetLinkage(scanf_function, LLVMExternalLinkage);
-        this.main_block = LLVMAppendBasicBlock(this.main_function, "");
+        LLVMBasicBlockRef main_block = LLVMAppendBasicBlock(this.main_function, "");
         this.builder = LLVMCreateBuilder();
-        LLVMPositionBuilderAtEnd(this.builder, this.main_block);
+        LLVMPositionBuilderAtEnd(this.builder, main_block);
         this.variable_string = LLVMBuildGlobalStringPtr(this.builder, "%lld", "");
         this.tmp_variable = LLVMBuildAlloca(this.builder, LLVMInt64Type(), "");
+        this.zero_constant = LLVMConstInt(LLVMInt64Type(), 0, 0);
+        this.blocks = new Stack<>();
+        this.blocks.push(main_block);
     }
 
     public void initVariables(Set<String> variables) {
@@ -87,8 +92,32 @@ public class CodeGen {
         return LLVMConstInt(LLVMInt64Type(), value, 0);
     }
 
+    public void pushBlockStack(LLVMBasicBlockRef block) {
+        this.blocks.push(block);
+    }
+
+    public LLVMBasicBlockRef popBlockStack() {
+        return this.blocks.pop();
+    }
+
+    public LLVMBasicBlockRef peekBlockStack() {
+        return this.blocks.peek();
+    }
+
+    public LLVMBasicBlockRef newBlock() {
+        return LLVMAppendBasicBlock(this.main_function, "");
+    }
+
+    public LLVMValueRef getBoolean(LLVMValueRef value) {
+        return LLVMBuildICmp(this.builder, LLVMIntNE, value, this.zero_constant, "");
+    }
+
     public void finalize() {
-        LLVMPositionBuilderAtEnd(this.builder, this.main_block);
+        LLVMBasicBlockRef main_block = this.blocks.pop();
+        if(!this.blocks.empty()) {
+            System.err.println("Internal stack error!");
+            System.exit(1);
+        }
         LLVMBuildRet(this.builder, LLVMConstInt(LLVMInt32Type(), 0, 0));
         LLVMVerifyModule(this.module, LLVMAbortProcessAction, error);
         LLVMDisposeMessage(error);
