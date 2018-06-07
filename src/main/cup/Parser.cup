@@ -46,7 +46,7 @@ expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | expr:l MUL expr:r {: RESULT = new MulExpr(l, r); :}
     | expr:l DIV expr:r {: RESULT = new DivExpr(l, r); :}
     | expr:l MOD expr:r {: RESULT = new ModExpr(l, r); :}
-    | SUB expr:e {: RESULT = new SubExpr(new NumLiteralExpr(0L), e); :} %prec UNARY
+    | SUB expr:e {: RESULT = new NegExpr(e); :} %prec UNARY
     | ADD expr:e {: RESULT = e; :} %prec UNARY
     | LPAREN expr:e RPAREN {: RESULT = e; :}
     | IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignExpr(id, e); :}
