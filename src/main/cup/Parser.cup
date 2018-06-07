@@ -15,6 +15,7 @@ non terminal Expr expr;
 non terminal newLine;
 
 precedence right EQUALS;
+precedence right QUESTION_MARK;
 precedence left ADD, SUB;
 precedence left MUL, DIV, MOD;
 precedence right UNARY;
@@ -50,6 +51,7 @@ expr ::= NUM_LITERAL:n {: RESULT = new NumLiteralExpr(n); :}
     | ADD expr:e {: RESULT = e; :} %prec UNARY
     | LPAREN expr:e RPAREN {: RESULT = e; :}
     | IDENTIFIER:id EQUALS expr:e {: RESULT = new AssignExpr(id, e); :}
+    | expr:cond QUESTION_MARK expr:ifTrue COLON expr:ifFalse {: RESULT = new IfExpr(cond, ifTrue, ifFalse); :}
     | INPUT {: RESULT = new InputExpr(); :}
     | INPUT STRING_LITERAL:prompt {: RESULT = new InputExpr(prompt); :};
 
