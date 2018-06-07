@@ -19,6 +19,7 @@ import java_cup.runtime.ComplexSymbolFactory;
 Space = [ ] | \t | \f
 NewLine = \n | \r | \r\n
 Comment = "//".*{NewLine}
+CommentsOrNewLines = ({Comment}|{NewLine}|" ")+
 Identifier = [:jletter:][:jletterdigit:]*
 DecLiteral = [:digit:]+
 HexLiteral = 0x[0-9a-fA-F]+
@@ -26,8 +27,8 @@ StringLiteral = \".*\"
 
 %%
 {Space} { }
-//{Comment} {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
-({Comment}|{NewLine})+ {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
+"&"{CommentsOrNewLines} { }
+{CommentsOrNewLines} {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
 "input" {return sf.newSymbol("INPUT", ParserSym.INPUT);}
 "output" {return sf.newSymbol("OUTPUT", ParserSym.OUTPUT);}
 "newLine" {return sf.newSymbol("OUTPUT_NEWLINE", ParserSym.OUTPUT_NEWLINE);}
@@ -43,7 +44,6 @@ StringLiteral = \".*\"
 ":" {return sf.newSymbol("COLON", ParserSym.COLON);}
 "(" {return sf.newSymbol("LPAREN", ParserSym.LPAREN);}
 ")" {return sf.newSymbol("RPAREN", ParserSym.RPAREN);}
-"&" {return sf.newSymbol("LINEWRAP", ParserSym.LINEWRAP);}
 {Identifier} {return sf.newSymbol("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
 {DecLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
 {HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
