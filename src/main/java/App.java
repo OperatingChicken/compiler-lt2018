@@ -1,12 +1,16 @@
 import ast.statements.Stmt;
 import java_cup.runtime.ComplexSymbolFactory;
 import cg.CodeGen;
+
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.Reader;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.impl.Arguments;
+
+import java.io.StringReader;
 import java.lang.ProcessBuilder;
 import java.lang.Process;
 import java.nio.file.Files;
@@ -26,7 +30,7 @@ public class App {
         String output_file = arguments.get("output");
         String compiler = arguments.get("compiler");
         Boolean debug_enabled = arguments.get("debug");
-        Reader in = new FileReader(source_file);
+        Reader in = new StringReader(new String(Files.readAllBytes(Paths.get(source_file))) + System.lineSeparator());
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
         Lexer lexer = new Lexer(in, symbolFactory);
         Parser parser = new Parser(lexer, symbolFactory);
