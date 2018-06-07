@@ -26,6 +26,6 @@ public class App {
         codegen.initVariables(astRoot.getIdentifiers());
         astRoot.codeGen(codegen);
         System.out.println(astRoot.toString());
-        codegen.finalize();
+        codegen.emitObj("output.o", true);
     }
 }

@@ -112,7 +112,11 @@ public class CodeGen {
         return LLVMBuildICmp(this.builder, LLVMIntNE, value, this.zero_constant, "");
     }
 
-    public void finalize() {
+    public void emitObj(String path) {
+        this.emitObj(path, false);
+    }
+
+    public void emitObj(String path, boolean debug) {
         LLVMBasicBlockRef main_block = this.blocks.pop();
         if(!this.blocks.empty()) {
             System.err.println("Internal stack error!");
@@ -140,15 +144,17 @@ public class CodeGen {
         LLVMAddGVNPass(pass);
         LLVMAddCFGSimplificationPass(pass);
         LLVMRunPassManager(pass, this.module);
-        BytePointer output_file = new BytePointer("output.o");
+        BytePointer output_file = new BytePointer(path);
         if(LLVMTargetMachineEmitToFile(target_machine, this.module, output_file, LLVMObjectFile, error) != 0) {
             System.err.println(error);
             System.exit(1);
         }
         LLVMDisposeMessage(error);
-        // DEBUG
-        String module_string = LLVMPrintModuleToString(this.module).getString();
-        System.err.println(module_string);
+        if(debug) {
+            System.err.println("LLVM-IR dump:");
+            String module_string = LLVMPrintModuleToString(this.module).getString();
+            System.err.println(module_string);
+        }
     }
 
     public static synchronized CodeGen getInstance() {
