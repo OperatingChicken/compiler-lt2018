@@ -3,29 +3,48 @@ import java_cup.runtime.ComplexSymbolFactory;
 import cg.CodeGen;
 import java.io.FileReader;
 import java.io.Reader;
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.Namespace;
+import net.sourceforge.argparse4j.impl.Arguments;
+import java.lang.ProcessBuilder;
+import java.lang.Process;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            //System.err.println("Usage: java -jar compiler-lt2018.jar inputFileName");
-            //System.exit(1);
-            args = new String[]{"default.lang"};
-        }
-        Reader in = new FileReader(args[0]);
+        ArgumentParser argParser = ArgumentParsers.newFor("Compiler").build()
+                .defaultHelp(true)
+                .description("Compiler for lang");
+        argParser.addArgument("-o", "--output").type(String.class).nargs(1).setDefault("a.out").help("Output file");
+        argParser.addArgument("-c", "--compiler").type(String.class).nargs(1).setDefault("cc").help("C compiler to link object code");
+        argParser.addArgument("-d", "--debug").action(Arguments.storeTrue()).help("Enable debug printing");
+        argParser.addArgument("source").type(String.class).required(true).help("Source file");
+        Namespace arguments = argParser.parseArgsOrFail(args);
+        String source_file = arguments.get("source");
+        String output_file = arguments.get("output");
+        String compiler = arguments.get("compiler");
+        Boolean debug_enabled = arguments.get("debug");
+        Reader in = new FileReader(source_file);
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
         Lexer lexer = new Lexer(in, symbolFactory);
-
-        /*Symbol sym;
-        while ((sym = lexer.next_token()).sym != ParserSym.EOF) {
-            System.out.println(sym);
-        }*/
-
         Parser parser = new Parser(lexer, symbolFactory);
         Stmt astRoot = (Stmt) parser.parse().value;
         CodeGen codegen = CodeGen.getInstance();
         codegen.initVariables(astRoot.getIdentifiers());
         astRoot.codeGen(codegen);
-        System.out.println(astRoot.toString());
-        codegen.emitObj("output.o", true);
+        if(debug_enabled) {
+            System.err.println("AST dump:");
+            System.err.println(astRoot.toString());
+        }
+        codegen.emitObj(output_file + ".o", debug_enabled);
+        Process cc = (new ProcessBuilder(compiler, output_file + ".o", "-o", output_file)).start();
+        cc.waitFor();
+        if(cc.exitValue() != 0) {
+            System.err.println("CC returned non-zero value!");
+            System.exit(1);
+        }
+        Files.delete(Paths.get(output_file + ".o"));
     }
 }

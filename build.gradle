@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
     compile group: 'org.bytedeco.javacpp-presets', name: 'llvm-platform', version: '5.0.1-1.4.1'
+    compile group: 'net.sourceforge.argparse4j', name: 'argparse4j', version: '0.8.1'
 }
 
 mainClassName = 'App'
