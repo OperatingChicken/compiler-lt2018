@@ -7,6 +7,7 @@ import java_cup.runtime.ComplexSymbolFactory;
 %line
 %column
 %class Lexer
+%state BODY, END
 
 %{
     private ComplexSymbolFactory sf;
@@ -26,26 +27,32 @@ HexLiteral = 0x[0-9a-fA-F]+
 StringLiteral = \".*\"
 
 %%
-{Space} { }
-"&"{CommentsOrNewLines} { }
-{CommentsOrNewLines} {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
-"input" {return sf.newSymbol("INPUT", ParserSym.INPUT);}
-"output" {return sf.newSymbol("OUTPUT", ParserSym.OUTPUT);}
-"newLine" {return sf.newSymbol("OUTPUT_NEWLINE", ParserSym.OUTPUT_NEWLINE);}
-"loop" {return sf.newSymbol("LOOP", ParserSym.LOOP);}
-"endLoop" {return sf.newSymbol("END_LOOP", ParserSym.END_LOOP);}
-"+" {return sf.newSymbol("ADD", ParserSym.ADD);}
-"-" {return sf.newSymbol("SUB", ParserSym.SUB);}
-"*" {return sf.newSymbol("MUL", ParserSym.MUL);}
-"/" {return sf.newSymbol("DIV", ParserSym.DIV);}
-"%" {return sf.newSymbol("MOD", ParserSym.MOD);}
-"=" {return sf.newSymbol("EQUALS", ParserSym.EQUALS);}
-"?" {return sf.newSymbol("QUESTION_MARK", ParserSym.QUESTION_MARK);}
-":" {return sf.newSymbol("COLON", ParserSym.COLON);}
-"(" {return sf.newSymbol("LPAREN", ParserSym.LPAREN);}
-")" {return sf.newSymbol("RPAREN", ParserSym.RPAREN);}
-{Identifier} {return sf.newSymbol("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
-{DecLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
-{HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
-{StringLiteral} {return sf.newSymbol("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
+<YYINITIAL> {
+{CommentsOrNewLines} { }
+"" {yybegin(BODY);}
+}
+<BODY> {
+    {Space} { }
+    "&"{CommentsOrNewLines} { }
+    {CommentsOrNewLines} {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
+    "input" {return sf.newSymbol("INPUT", ParserSym.INPUT);}
+    "output" {return sf.newSymbol("OUTPUT", ParserSym.OUTPUT);}
+    "newLine" {return sf.newSymbol("OUTPUT_NEWLINE", ParserSym.OUTPUT_NEWLINE);}
+    "loop" {return sf.newSymbol("LOOP", ParserSym.LOOP);}
+    "endLoop" {return sf.newSymbol("END_LOOP", ParserSym.END_LOOP);}
+    "+" {return sf.newSymbol("ADD", ParserSym.ADD);}
+    "-" {return sf.newSymbol("SUB", ParserSym.SUB);}
+    "*" {return sf.newSymbol("MUL", ParserSym.MUL);}
+    "/" {return sf.newSymbol("DIV", ParserSym.DIV);}
+    "%" {return sf.newSymbol("MOD", ParserSym.MOD);}
+    "=" {return sf.newSymbol("EQUALS", ParserSym.EQUALS);}
+    "?" {return sf.newSymbol("QUESTION_MARK", ParserSym.QUESTION_MARK);}
+    ":" {return sf.newSymbol("COLON", ParserSym.COLON);}
+    "(" {return sf.newSymbol("LPAREN", ParserSym.LPAREN);}
+    ")" {return sf.newSymbol("RPAREN", ParserSym.RPAREN);}
+    {Identifier} {return sf.newSymbol("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
+    {DecLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
+    {HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
+    {StringLiteral} {return sf.newSymbol("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
+}
 <<EOF>> {return sf.newSymbol("End of file", ParserSym.EOF);}
