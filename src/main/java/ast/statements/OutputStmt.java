@@ -43,6 +43,6 @@ public class OutputStmt extends Stmt {
     @Override
     public String toString() {
         return (label.equals(System.lineSeparator()) && expr == null) ?
-                "newLine" : ("output \"" + label + "\" " + expr.toString());
+                "newLine" : ("output \"" + label + "\"" + (expr == null ? "" : " " + expr.toString()));
     }
 }

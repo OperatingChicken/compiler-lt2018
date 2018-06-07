@@ -1,0 +1,20 @@
+n = input "Insert N: "
+i = n - 1
+prime = 1
+loop i - 1
+    prime = n % i ? prime : 0
+    i = i - 1
+endLoop
+notprime = 1 - prime
+loop prime
+    output n
+    output " is prime"
+    newLine
+    prime = prime - 1
+endLoop
+loop notprime
+    output n
+    output " is not prime"
+    newLine
+    notprime = notprime - 1
+endLoop
