@@ -124,7 +124,6 @@ public class CodeGen {
         }
         LLVMBuildRet(this.builder, LLVMConstInt(LLVMInt32Type(), 0, 0));
         LLVMVerifyModule(this.module, LLVMAbortProcessAction, error);
-        LLVMDisposeMessage(error);
         BytePointer target_triple = LLVMGetDefaultTargetTriple();
         LLVMSetTarget(this.module, target_triple);
         LLVMTargetRef target = new LLVMTargetRef();
@@ -132,7 +131,6 @@ public class CodeGen {
             System.err.println(error);
             System.exit(1);
         }
-        LLVMDisposeMessage(error);
         LLVMTargetMachineRef target_machine = LLVMCreateTargetMachine(target, target_triple.getString(), "generic", "", LLVMCodeGenLevelDefault, LLVMRelocPIC, LLVMCodeModelDefault);
         LLVMTargetDataRef data_layout = LLVMCreateTargetDataLayout(target_machine);
         BytePointer data_layout_string = LLVMCopyStringRepOfTargetData(data_layout);
@@ -149,7 +147,6 @@ public class CodeGen {
             System.err.println(error);
             System.exit(1);
         }
-        LLVMDisposeMessage(error);
         if(debug) {
             System.err.println("LLVM-IR dump:");
             String module_string = LLVMPrintModuleToString(this.module).getString();
