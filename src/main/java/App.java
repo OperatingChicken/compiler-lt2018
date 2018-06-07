@@ -2,22 +2,20 @@ import ast.statements.Stmt;
 import java_cup.runtime.ComplexSymbolFactory;
 import cg.CodeGen;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.*;
+
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.impl.Arguments;
 
-import java.io.StringReader;
 import java.lang.ProcessBuilder;
 import java.lang.Process;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ArgumentParser argParser = ArgumentParsers.newFor("Compiler").build()
                 .defaultHelp(true)
                 .description("Compiler for lang");
@@ -32,9 +30,17 @@ public class App {
         Boolean debug_enabled = arguments.get("debug");
         Reader in = new StringReader(new String(Files.readAllBytes(Paths.get(source_file))) + System.lineSeparator());
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
-        Lexer lexer = new Lexer(in, symbolFactory);
+        Lexer lexer = new Lexer(in, source_file, symbolFactory);
         Parser parser = new Parser(lexer, symbolFactory);
-        Stmt astRoot = (Stmt) parser.parse().value;
+        Stmt astRoot;
+        try {
+            astRoot = (Stmt) parser.parse().value;
+        } catch (Throwable ex) {
+            System.err.println(ex.getClass().getName());
+            System.err.println("Error: " + ex.getMessage());
+            System.exit(1);
+            return;
+        }
         CodeGen codegen = CodeGen.getInstance();
         codegen.initVariables(astRoot.getIdentifiers());
         astRoot.codeGen(codegen);

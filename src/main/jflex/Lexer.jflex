@@ -1,19 +1,35 @@
+import err.LexError;
 import java.io.Reader;
 import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.Location;
+import java_cup.runtime.Symbol;
 
 %%
 
+%apiprivate
 %cup
 %line
 %column
 %class Lexer
+%yylexthrow LexError
 %state BODY, END
 
 %{
+    private String fileName;
     private ComplexSymbolFactory sf;
-    public Lexer(Reader in, ComplexSymbolFactory sf) {
+    public Lexer(Reader in, String fileName, ComplexSymbolFactory sf) {
 	    this(in);
+	    this.fileName = fileName;
 	    this.sf = sf;
+    }
+    private Symbol makeSym(String name, int id, Object value) {
+        return sf.newSymbol(name, id,
+            new Location(fileName, yyline + 1, yycolumn + 1),
+            new Location(fileName, yyline + 1, yycolumn + 1 + yylength()),
+            value);
+    }
+    private Symbol makeSym(String name, int id) {
+        return makeSym(name, id, null);
     }
 %}
 
@@ -34,25 +50,26 @@ StringLiteral = \".*\"
 <BODY> {
     {Space} { }
     "&"{CommentsOrNewLines} { }
-    {CommentsOrNewLines} {return sf.newSymbol("NEWLINE", ParserSym.NEWLINE);}
-    "input" {return sf.newSymbol("INPUT", ParserSym.INPUT);}
-    "output" {return sf.newSymbol("OUTPUT", ParserSym.OUTPUT);}
-    "newLine" {return sf.newSymbol("OUTPUT_NEWLINE", ParserSym.OUTPUT_NEWLINE);}
-    "loop" {return sf.newSymbol("LOOP", ParserSym.LOOP);}
-    "endLoop" {return sf.newSymbol("END_LOOP", ParserSym.END_LOOP);}
-    "+" {return sf.newSymbol("ADD", ParserSym.ADD);}
-    "-" {return sf.newSymbol("SUB", ParserSym.SUB);}
-    "*" {return sf.newSymbol("MUL", ParserSym.MUL);}
-    "/" {return sf.newSymbol("DIV", ParserSym.DIV);}
-    "%" {return sf.newSymbol("MOD", ParserSym.MOD);}
-    "=" {return sf.newSymbol("EQUALS", ParserSym.EQUALS);}
-    "?" {return sf.newSymbol("QUESTION_MARK", ParserSym.QUESTION_MARK);}
-    ":" {return sf.newSymbol("COLON", ParserSym.COLON);}
-    "(" {return sf.newSymbol("LPAREN", ParserSym.LPAREN);}
-    ")" {return sf.newSymbol("RPAREN", ParserSym.RPAREN);}
-    {Identifier} {return sf.newSymbol("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
-    {DecLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
-    {HexLiteral} {return sf.newSymbol("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
-    {StringLiteral} {return sf.newSymbol("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
+    {CommentsOrNewLines} {return makeSym("NEWLINE", ParserSym.NEWLINE);}
+    "input" {return makeSym("INPUT", ParserSym.INPUT);}
+    "output" {return makeSym("OUTPUT", ParserSym.OUTPUT);}
+    "newLine" {return makeSym("OUTPUT_NEWLINE", ParserSym.OUTPUT_NEWLINE);}
+    "loop" {return makeSym("LOOP", ParserSym.LOOP);}
+    "endLoop" {return makeSym("END_LOOP", ParserSym.END_LOOP);}
+    "+" {return makeSym("ADD", ParserSym.ADD);}
+    "-" {return makeSym("SUB", ParserSym.SUB);}
+    "*" {return makeSym("MUL", ParserSym.MUL);}
+    "/" {return makeSym("DIV", ParserSym.DIV);}
+    "%" {return makeSym("MOD", ParserSym.MOD);}
+    "=" {return makeSym("EQUALS", ParserSym.EQUALS);}
+    "?" {return makeSym("QUESTION_MARK", ParserSym.QUESTION_MARK);}
+    ":" {return makeSym("COLON", ParserSym.COLON);}
+    "(" {return makeSym("LPAREN", ParserSym.LPAREN);}
+    ")" {return makeSym("RPAREN", ParserSym.RPAREN);}
+    {Identifier} {return makeSym("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
+    {DecLiteral} {return makeSym("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
+    {HexLiteral} {return makeSym("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
+    {StringLiteral} {return makeSym("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
+    [^] {throw new LexError(yyline + 1, yycolumn + 1, yytext());}
 }
-<<EOF>> {return sf.newSymbol("End of file", ParserSym.EOF);}
+<<EOF>> {return makeSym("End of file", ParserSym.EOF);}
