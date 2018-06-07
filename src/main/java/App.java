@@ -21,15 +21,15 @@ public class App {
         ArgumentParser argParser = ArgumentParsers.newFor("Compiler").build()
                 .defaultHelp(true)
                 .description("Compiler for lang");
-        argParser.addArgument("-o", "--output").type(String.class).nargs(1).setDefault("a.out").help("Output file");
-        argParser.addArgument("-c", "--compiler").type(String.class).nargs(1).setDefault("cc").help("C compiler to link object code");
+        argParser.addArgument("-o", "--output").type(String.class).setDefault("a.out").help("Output file");
+        argParser.addArgument("-c", "--compiler").type(String.class).setDefault("cc").help("C compiler to link object code");
         argParser.addArgument("-d", "--debug").action(Arguments.storeTrue()).help("Enable debug printing");
         argParser.addArgument("source").type(String.class).required(true).help("Source file");
         Namespace arguments = argParser.parseArgsOrFail(args);
-        String source_file = arguments.get("source");
-        String output_file = arguments.get("output");
-        String compiler = arguments.get("compiler");
-        Boolean debug_enabled = arguments.get("debug");
+        String source_file = arguments.getString("source");
+        String output_file = arguments.getString("output");
+        String compiler = arguments.getString("compiler");
+        Boolean debug_enabled = arguments.getBoolean("debug");
         Reader in = new StringReader(new String(Files.readAllBytes(Paths.get(source_file))) + System.lineSeparator());
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
         Lexer lexer = new Lexer(in, symbolFactory);

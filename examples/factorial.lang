@@ -1,0 +1,8 @@
+n = input "N: "
+acc = 1
+loop n - 1
+    acc = acc * n
+    n = n - 1
+endLoop
+output "N! = " acc
+newLine

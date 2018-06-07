@@ -1,0 +1,11 @@
+a = input
+b = input
+loop b
+    c = 2
+    loop c
+        a = a + 1
+        c = c - 1
+    endLoop
+    b = b - 1
+endLoop
+output a

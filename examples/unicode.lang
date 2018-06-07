@@ -1,0 +1,4 @@
+あ = input "あ: "
+え = input "え: "
+output "あ + え = " あ + え
+newLine

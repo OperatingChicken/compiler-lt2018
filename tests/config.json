@@ -1,0 +1,47 @@
+[
+    {
+        "name": "Hello World",
+        "source": "hello_world.lang",
+        "compileShouldFail": false,
+        "input": "",
+        "output": "Hello World!\n"
+    },
+    {
+        "name": "Sum",
+        "source": "sum.lang",
+        "compileShouldFail": false,
+        "input": "24\n18",
+        "output": "42"
+    },
+    {
+        "name": "Innested loop",
+        "source": "multiloop.lang",
+        "compileShouldFail": false,
+        "input": "2\n7",
+        "output": "16"
+    },
+    {
+        "name": "Empty program",
+        "source": "empty.lang",
+        "compileShouldFail": true
+    },
+    {
+        "name": "Empty loop",
+        "source": "empty_loop.lang",
+        "compileShouldFail": true
+    },
+    {
+        "name": "Assign expression",
+        "source": "assign_expr.lang",
+        "compileShouldFail": false,
+        "input": "",
+        "output": ""
+    },
+    {
+        "name": "Line continuation",
+        "source": "multiline.lang",
+        "compileShouldFail": false,
+        "input": "42",
+        "output": "42"
+    }
+]
