@@ -15,18 +15,14 @@ import java_cup.runtime.Symbol;
 %state BODY, END
 
 %{
-    private String fileName;
     private ComplexSymbolFactory sf;
-    public Lexer(Reader in, String fileName, ComplexSymbolFactory sf) {
+    public Lexer(Reader in, ComplexSymbolFactory sf) {
 	    this(in);
-	    this.fileName = fileName;
 	    this.sf = sf;
     }
     private Symbol makeSym(String name, int id, Object value) {
-        return sf.newSymbol(name, id,
-            new Location(fileName, yyline + 1, yycolumn + 1),
-            new Location(fileName, yyline + 1, yycolumn + 1 + yylength()),
-            value);
+        Location location = new Location(yyline + 1, yycolumn + 1);
+        return sf.newSymbol(name, id, location, location, value);
     }
     private Symbol makeSym(String name, int id) {
         return makeSym(name, id, null);

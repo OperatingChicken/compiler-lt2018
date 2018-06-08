@@ -1,4 +1,5 @@
 import ast.statements.Stmt;
+import err.AbstractError;
 import java_cup.runtime.ComplexSymbolFactory;
 import cg.CodeGen;
 
@@ -30,14 +31,13 @@ public class App {
         Boolean debug_enabled = arguments.get("debug");
         Reader in = new StringReader(new String(Files.readAllBytes(Paths.get(source_file))) + System.lineSeparator());
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
-        Lexer lexer = new Lexer(in, source_file, symbolFactory);
+        Lexer lexer = new Lexer(in, symbolFactory);
         Parser parser = new Parser(lexer, symbolFactory);
         Stmt astRoot;
         try {
             astRoot = (Stmt) parser.parse().value;
-        } catch (Throwable ex) {
-            System.err.println(ex.getClass().getName());
-            System.err.println("Error: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.err.println(source_file + ": " + ex.getMessage());
             System.exit(1);
             return;
         }
