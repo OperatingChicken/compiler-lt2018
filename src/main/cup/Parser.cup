@@ -1,8 +1,35 @@
-import java_cup.runtime.*;
-import ast.statements.*;
 import ast.expressions.*;
+import ast.statements.*;
+import err.ParseError;
+import java.util.List;
+import java.util.stream.Collectors;
+import java_cup.runtime.*;
+import java_cup.runtime.ComplexSymbolFactory.*;
 
 class Parser;
+
+parser code {:
+    private List<Integer> expectedTokenIds;
+    @Override
+    public void report_fatal_error(String message, Object info) throws ParseError {
+        done_parsing();
+        ComplexSymbol sym = (ComplexSymbol) cur_token;
+        if (expectedTokenIds == null) {
+            throw new ParseError(sym.getLeft().getLine(), sym.getLeft().getColumn());
+        } else {
+            String expectedTokens = expectedTokenIds.stream().map(this::symbl_name_from_id).collect(Collectors.joining(", "));
+            throw new ParseError(sym.getLeft().getLine(), sym.getLeft().getColumn(), expectedTokens);
+        }
+    }
+    @Override
+    public void syntax_error(Symbol cur_token) {
+        expectedTokenIds = expected_token_ids();
+    }
+    @Override
+    public void unrecovered_syntax_error(Symbol cur_token) throws ParseError {
+        report_fatal_error("", cur_token);
+    }
+:}
 
 terminal NEWLINE, INPUT, OUTPUT, OUTPUT_NEWLINE, LOOP, END_LOOP;
 terminal ADD, SUB, MUL, DIV, MOD, EQUALS, QUESTION_MARK, COLON, LPAREN, RPAREN, UNARY;
