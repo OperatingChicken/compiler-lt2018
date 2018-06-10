@@ -13,10 +13,12 @@ public class AssignStmt extends Stmt {
         this.expr = expr;
     }
 
+    @Override
     public void codeGen(CodeGen codegen) {
         codegen.setVariable(this.identifier, this.expr.codeGen(codegen));
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         Set<String> result = this.expr.getIdentifiers();
         result.add(this.identifier);

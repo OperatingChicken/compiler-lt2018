@@ -26,6 +26,7 @@ public class OutputStmt extends Stmt {
         this(System.lineSeparator(), null);
     }
 
+    @Override
     public void codeGen(CodeGen codegen) {
         codegen.outputString(this.label);
         if(this.expr != null) {
@@ -33,6 +34,7 @@ public class OutputStmt extends Stmt {
         }
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         if(this.expr == null) {
             return new HashSet<>();

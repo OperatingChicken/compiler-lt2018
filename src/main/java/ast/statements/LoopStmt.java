@@ -18,6 +18,7 @@ public class LoopStmt extends Stmt {
         this.body = body;
     }
 
+    @Override
     public void codeGen(CodeGen codegen) {
         LLVMBasicBlockRef condBB = codegen.newBlock();
         LLVMBasicBlockRef bodyBB = codegen.newBlock();
@@ -35,6 +36,7 @@ public class LoopStmt extends Stmt {
         codegen.pushBlockStack(afterBB);
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         Set<String> result = this.condition.getIdentifiers();
         result.addAll(this.body.getIdentifiers());

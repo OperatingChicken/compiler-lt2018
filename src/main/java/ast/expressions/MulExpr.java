@@ -9,6 +9,7 @@ public class MulExpr extends BinaryOpExpr {
         super(leftOperand, rightOperand);
     }
 
+    @Override
     public LLVMValueRef doBinaryCG(CodeGen codegen, LLVMValueRef left, LLVMValueRef right) {
         return LLVMBuildMul(codegen.getBuilder(), left, right, "");
     }

@@ -12,10 +12,12 @@ public class NumLiteralExpr extends Expr {
         this.value = value;
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         return new HashSet<>();
     }
 
+    @Override
     public LLVMValueRef codeGen(CodeGen codegen) {
         return codegen.getConstant(this.value);
     }

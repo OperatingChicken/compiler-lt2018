@@ -16,10 +16,12 @@ public class InputExpr extends Expr {
         this("");
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         return new HashSet<>();
     }
 
+    @Override
     public LLVMValueRef codeGen(CodeGen codegen) {
         codegen.outputString(this.prompt);
         return codegen.inputValue();

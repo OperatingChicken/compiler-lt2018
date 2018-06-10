@@ -18,12 +18,14 @@ public class StmtList extends Stmt {
         statements.add(stmt);
     }
 
+    @Override
     public void codeGen(CodeGen codegen) {
         for(Stmt stmt: this.statements) {
             stmt.codeGen(codegen);
         }
     }
 
+    @Override
     public Set<String> getIdentifiers() {
         HashSet<String> result = new HashSet<>();
         for(Stmt stmt: this.statements) {
