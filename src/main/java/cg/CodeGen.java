@@ -117,7 +117,6 @@ public class CodeGen {
     }
 
     public void emitObj(String path, boolean debug) {
-        LLVMBasicBlockRef main_block = this.blocks.pop();
         if(!this.blocks.empty()) {
             System.err.println("Internal stack error!");
             System.exit(1);

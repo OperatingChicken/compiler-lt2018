@@ -19,7 +19,6 @@ public class LoopStmt extends Stmt {
     }
 
     public void codeGen(CodeGen codegen) {
-        LLVMBasicBlockRef currentBB = codegen.popBlockStack();
         LLVMBasicBlockRef condBB = codegen.newBlock();
         LLVMBasicBlockRef bodyBB = codegen.newBlock();
         LLVMBasicBlockRef afterBB = codegen.newBlock();
@@ -27,12 +26,10 @@ public class LoopStmt extends Stmt {
         LLVMPositionBuilderAtEnd(codegen.getBuilder(), condBB);
         codegen.pushBlockStack(condBB);
         LLVMValueRef cond_value = codegen.getBoolean(this.condition.codeGen(codegen));
-        LLVMBasicBlockRef newCondBB = codegen.popBlockStack();
         LLVMBuildCondBr(codegen.getBuilder(), cond_value, bodyBB, afterBB);
         LLVMPositionBuilderAtEnd(codegen.getBuilder(), bodyBB);
         codegen.pushBlockStack(bodyBB);
         this.body.codeGen(codegen);
-        LLVMBasicBlockRef newBodyBB = codegen.popBlockStack();
         LLVMBuildBr(codegen.getBuilder(), condBB);
         LLVMPositionBuilderAtEnd(codegen.getBuilder(), afterBB);
         codegen.pushBlockStack(afterBB);

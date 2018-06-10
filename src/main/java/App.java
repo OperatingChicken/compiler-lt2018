@@ -1,5 +1,4 @@
 import ast.statements.Stmt;
-import err.AbstractError;
 import java_cup.runtime.ComplexSymbolFactory;
 import cg.CodeGen;
 

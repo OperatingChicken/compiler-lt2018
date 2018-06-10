@@ -28,7 +28,6 @@ public class IfExpr extends Expr {
 
     @Override
     public LLVM.LLVMValueRef codeGen(CodeGen codegen) {
-        LLVMBasicBlockRef currentBB = codegen.popBlockStack();
         LLVMBasicBlockRef condBB = codegen.newBlock();
         LLVMBasicBlockRef ifTrueBB = codegen.newBlock();
         LLVMBasicBlockRef ifFalseBB = codegen.newBlock();
