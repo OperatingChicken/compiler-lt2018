@@ -22,12 +22,14 @@ public class App {
         argParser.addArgument("-o", "--output").type(String.class).setDefault("a.out").help("Output file");
         argParser.addArgument("-c", "--compiler").type(String.class).setDefault("cc").help("C compiler to link object code");
         argParser.addArgument("-d", "--debug").action(Arguments.storeTrue()).help("Enable debug printing");
+        argParser.addArgument("-i", "--output-ir").help("Dump LLVM intermediate representation to the specified file");
         argParser.addArgument("source").type(String.class).required(true).help("Source file");
         Namespace arguments = argParser.parseArgsOrFail(args);
         String source_file = arguments.getString("source");
         String output_file = arguments.getString("output");
         String compiler = arguments.getString("compiler");
         Boolean debug_enabled = arguments.getBoolean("debug");
+
         Reader in = new StringReader(new String(Files.readAllBytes(Paths.get(source_file))) + System.lineSeparator());
         ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
         Lexer lexer = new Lexer(in, symbolFactory);
@@ -40,6 +42,7 @@ public class App {
             System.exit(1);
             return;
         }
+
         CodeGen codegen = CodeGen.getInstance();
         codegen.initVariables(astRoot.getIdentifiers());
         astRoot.codeGen(codegen);
@@ -47,7 +50,7 @@ public class App {
             System.err.println("AST dump:");
             System.err.println(astRoot.toString());
         }
-        codegen.emitObj(output_file + ".o", debug_enabled);
+        codegen.emitObj(output_file + ".o", debug_enabled, arguments.getString("output_ir"));
         Process cc = (new ProcessBuilder(compiler, output_file + ".o", "-o", output_file)).start();
         cc.waitFor();
         if(cc.exitValue() != 0) {

@@ -112,11 +112,7 @@ public class CodeGen {
         return LLVMBuildICmp(this.builder, LLVMIntNE, value, this.zero_constant, "");
     }
 
-    public void emitObj(String path) {
-        this.emitObj(path, false);
-    }
-
-    public void emitObj(String path, boolean debug) {
+    public void emitObj(String path, boolean printIrToStdout, String printIrToFile) {
         this.blocks.pop();
         if(!this.blocks.empty()) {
             System.err.println("Internal stack error!");
@@ -147,10 +143,13 @@ public class CodeGen {
             System.err.println(error);
             System.exit(1);
         }
-        if(debug) {
+        if(printIrToStdout) {
             System.err.println("LLVM-IR dump:");
             String module_string = LLVMPrintModuleToString(this.module).getString();
             System.err.println(module_string);
+        }
+        if(printIrToFile != null)  {
+            LLVMPrintModuleToFile(this.module, printIrToFile, error);
         }
     }
 
