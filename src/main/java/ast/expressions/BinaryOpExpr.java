@@ -1,5 +1,6 @@
 package ast.expressions;
 
+import java.util.HashSet;
 import java.util.Set;
 import org.bytedeco.javacpp.LLVM.LLVMValueRef;
 import cg.CodeGen;
@@ -16,7 +17,7 @@ public abstract class BinaryOpExpr extends Expr {
 
     @Override
     public Set<String> getIdentifiers() {
-        Set<String> result = this.leftOperand.getIdentifiers();
+        Set<String> result = new HashSet<>(this.leftOperand.getIdentifiers());
         result.addAll(this.rightOperand.getIdentifiers());
         return result;
     }

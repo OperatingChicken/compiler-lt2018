@@ -36,10 +36,11 @@ public class OutputStmt extends Stmt {
 
     @Override
     public Set<String> getIdentifiers() {
-        if(this.expr == null) {
-            return new HashSet<>();
+        Set<String> result = new HashSet<>();
+        if(this.expr != null) {
+            result.addAll(this.expr.getIdentifiers());
         }
-        return this.expr.getIdentifiers();
+        return result;
     }
 
     @Override

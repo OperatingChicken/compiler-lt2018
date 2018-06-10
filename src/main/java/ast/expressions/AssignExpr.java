@@ -3,6 +3,7 @@ package ast.expressions;
 import cg.CodeGen;
 import org.bytedeco.javacpp.LLVM.LLVMValueRef;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class AssignExpr extends Expr {
@@ -22,7 +23,7 @@ public class AssignExpr extends Expr {
 
     @Override
     public Set<String> getIdentifiers() {
-        Set<String> result = this.expr.getIdentifiers();
+        Set<String> result = new HashSet<>(this.expr.getIdentifiers());
         result.add(this.identifier);
         return result;
     }

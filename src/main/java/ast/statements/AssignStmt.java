@@ -1,5 +1,6 @@
 package ast.statements;
 
+import java.util.HashSet;
 import java.util.Set;
 import ast.expressions.Expr;
 import cg.CodeGen;
@@ -20,7 +21,7 @@ public class AssignStmt extends Stmt {
 
     @Override
     public Set<String> getIdentifiers() {
-        Set<String> result = this.expr.getIdentifiers();
+        Set<String> result = new HashSet<>(this.expr.getIdentifiers());
         result.add(this.identifier);
         return result;
     }

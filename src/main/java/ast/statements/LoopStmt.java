@@ -1,5 +1,6 @@
 package ast.statements;
 
+import java.util.HashSet;
 import java.util.Set;
 import ast.expressions.Expr;
 import cg.CodeGen;
@@ -38,7 +39,7 @@ public class LoopStmt extends Stmt {
 
     @Override
     public Set<String> getIdentifiers() {
-        Set<String> result = this.condition.getIdentifiers();
+        Set<String> result = new HashSet<>(this.condition.getIdentifiers());
         result.addAll(this.body.getIdentifiers());
         return result;
     }
