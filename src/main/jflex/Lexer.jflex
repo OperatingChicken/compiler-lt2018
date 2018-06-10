@@ -12,10 +12,11 @@ import java_cup.runtime.Symbol;
 %column
 %class Lexer
 %yylexthrow LexError
-%state BODY, END
+%state BODY, STRING_LITERAL
 
 %{
     private ComplexSymbolFactory sf;
+    private StringBuilder stringLiteral;
     public Lexer(Reader in, ComplexSymbolFactory sf) {
 	    this(in);
 	    this.sf = sf;
@@ -36,7 +37,6 @@ CommentsOrNewLines = ({Comment}|{NewLine}|" ")+
 Identifier = [:jletter:][:jletterdigit:]*
 DecLiteral = [:digit:]+
 HexLiteral = 0x[0-9a-fA-F]+
-StringLiteral = \".*\"
 
 %%
 <YYINITIAL> {
@@ -65,7 +65,12 @@ StringLiteral = \".*\"
     {Identifier} {return makeSym("IDENTIFIER", ParserSym.IDENTIFIER, yytext());}
     {DecLiteral} {return makeSym("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.parseLong(yytext()));}
     {HexLiteral} {return makeSym("NUM_LITERAL", ParserSym.NUM_LITERAL, Long.decode(yytext()));}
-    {StringLiteral} {return makeSym("STRING_LITERAL", ParserSym.STRING_LITERAL, yytext().substring(1, yylength() - 1));}
+    \"[^\"] {stringLiteral = new StringBuilder(); stringLiteral.append(yytext().charAt(1)); yybegin(STRING_LITERAL);}
     [^] {throw new LexError(yyline + 1, yycolumn + 1, yytext());}
+}
+<STRING_LITERAL> {
+    "\\\"" {stringLiteral.append("\"");}
+    \" {yybegin(BODY); return makeSym("STRING_LITERAL", ParserSym.STRING_LITERAL, stringLiteral.toString());}
+    [^] {stringLiteral.append(yytext());}
 }
 <<EOF>> {return makeSym("End of file", ParserSym.EOF);}

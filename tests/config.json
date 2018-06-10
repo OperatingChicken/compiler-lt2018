@@ -11,7 +11,7 @@
         "source": "sum.lang",
         "compileShouldFail": false,
         "input": "24\n18",
-        "output": "42"
+        "output": "A:B:42"
     },
     {
         "name": "Innested loop",
@@ -43,5 +43,17 @@
         "compileShouldFail": false,
         "input": "42",
         "output": "42"
+    },
+    {
+	"name": "String literals must not be empty",
+	"source": "empty_string_literal.lang",
+	"compileShouldFail": true
+    },
+    {
+	"name": "Escaping quotes in string literals",
+	"source": "string_literal_escape.lang",
+	"compileShouldFail": false,
+	"input": "",
+	"output": "this is a \"string\" containing quotes"
     }
 ]
