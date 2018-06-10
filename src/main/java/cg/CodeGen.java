@@ -117,6 +117,7 @@ public class CodeGen {
     }
 
     public void emitObj(String path, boolean debug) {
+        this.blocks.pop();
         if(!this.blocks.empty()) {
             System.err.println("Internal stack error!");
             System.exit(1);
