@@ -45,15 +45,22 @@
         "output": "42"
     },
     {
-	"name": "String literals must not be empty",
-	"source": "empty_string_literal.lang",
-	"compileShouldFail": true
+    	"name": "String literals must not be empty",
+    	"source": "empty_string_literal.lang",
+    	"compileShouldFail": true
     },
     {
-	"name": "Escaping quotes in string literals",
-	"source": "string_literal_escape.lang",
-	"compileShouldFail": false,
-	"input": "",
-	"output": "this is a \"string\" containing quotes"
+    	"name": "Escaping quotes in string literals",
+    	"source": "string_literal_escape.lang",
+    	"compileShouldFail": false,
+    	"input": "",
+    	"output": "this is a \"string\" containing quotes"
+    },
+    {
+    	"name": "Unicode",
+    	"source": "unicode.lang",
+    	"compileShouldFail": false,
+    	"input": "18\n24",
+    	"output": "あ: え: あ + え = 42\n"
     }
 ]
