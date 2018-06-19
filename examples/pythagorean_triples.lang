@@ -1,0 +1,27 @@
+n = input "Max N: "
+a = 0
+loop n - a
+    b = a + 1
+    loop n - b
+        c = b + 1
+        loop n - c
+            d = 1
+            e = 1
+            loop e * (a * a + b * b - c * c)
+                e = 0
+                d = 0
+            endLoop
+            loop d
+                output a
+                output "² + " b
+                output "² = " c
+                output "²"
+                newLine
+                d = 0
+            endLoop
+            c = c + 1
+        endLoop
+        b = b + 1
+    endLoop
+    a = a + 1
+endLoop
