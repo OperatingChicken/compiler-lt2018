@@ -1,0 +1,8 @@
+A = &
+input "A: " // Get A from input
+B = &
+input "B: " // Get B from input
+C = & // Declare C
+A + B // Sum A and B
+output C // Print C
+newLine

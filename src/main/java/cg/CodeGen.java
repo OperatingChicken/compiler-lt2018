@@ -124,7 +124,7 @@ public class CodeGen {
         LLVMSetTarget(this.module, target_triple);
         LLVMTargetRef target = new LLVMTargetRef();
         if(LLVMGetTargetFromTriple(target_triple, target, error) != 0) {
-            System.err.println(error);
+            System.err.println(error.getString());
             System.exit(1);
         }
         LLVMTargetMachineRef target_machine = LLVMCreateTargetMachine(target, target_triple.getString(), "generic", "", LLVMCodeGenLevelDefault, LLVMRelocPIC, LLVMCodeModelDefault);
@@ -140,7 +140,7 @@ public class CodeGen {
         LLVMRunPassManager(pass, this.module);
         BytePointer output_file = new BytePointer(path);
         if(LLVMTargetMachineEmitToFile(target_machine, this.module, output_file, LLVMObjectFile, error) != 0) {
-            System.err.println(error);
+            System.err.println(error.getString());
             System.exit(1);
         }
         if(printIrToStdout) {
