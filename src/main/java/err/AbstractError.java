@@ -14,6 +14,11 @@ public abstract class AbstractError extends Exception {
 
     @Override
     public final String getMessage() {
-        return String.format("%s error at line %d, column %d: %s", getErrorName(), line, column, super.getMessage());
+        String result = String.format("%s error at line %d, column %d", getErrorName(), line, column);
+        String details = super.getMessage();
+        if (details != null && details.length() != 0) {
+            result += ": " + details;
+        }
+        return result;
     }
 }

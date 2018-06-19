@@ -14,7 +14,7 @@ parser code {:
     public void report_fatal_error(String message, Object info) throws ParseError {
         done_parsing();
         ComplexSymbol sym = (ComplexSymbol) cur_token;
-        if (expectedTokenIds == null) {
+        if (expectedTokenIds == null || expectedTokenIds.size() == 0) {
             throw new ParseError(sym.getLeft().getLine(), sym.getLeft().getColumn());
         } else {
             String expectedTokens = expectedTokenIds.stream().map(this::symbl_name_from_id).collect(Collectors.joining(", "));
