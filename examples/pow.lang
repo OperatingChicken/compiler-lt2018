@@ -1,0 +1,11 @@
+base = input "Inserire base: "
+remaining = exp = input "Inserire esponente: "
+result = 1
+loop remaining
+	result = result * base
+	remaining = remaining - 1
+endLoop
+output base
+output "**" exp
+output "=" result
+newLine
