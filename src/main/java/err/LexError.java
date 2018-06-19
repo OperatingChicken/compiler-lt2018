@@ -7,6 +7,6 @@ public class LexError extends AbstractError {
 
     @Override
     String getErrorName() {
-        return "Syntax"; //TODO proper name?
+        return "Syntax";
     }
 }
